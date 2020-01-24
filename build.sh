@@ -12,7 +12,7 @@ sourceFolder='./src'
 slnFile=$sourceFolder/Sonarr.sln
 updateSubFolder=Sonarr.Update
 
-nuget='tools/nuget/nuget.exe';
+nuget=$(which nuget);
 vswhere='tools/vswhere/vswhere.exe';
 
 . ./version.sh
@@ -48,8 +48,8 @@ UpdateVersionNumber()
         verBuild=`echo "${BUILD_NUMBER}" | cut -d. -f4`
         BUILD_NUMBER=$verMajorMinorRevision.$verBuild
         echo "##teamcity[buildNumber '$BUILD_NUMBER']"
-        sed -i "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$BUILD_NUMBER<\/AssemblyVersion>/g" ./src/Directory.Build.props
-        sed -i "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>${BRANCH:-dev}<\/AssemblyConfiguration>/g" ./src/Directory.Build.props
+        sed -i '' "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$BUILD_NUMBER<\/AssemblyVersion>/g" ./src/Directory.Build.props
+        sed -i '' "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>${BRANCH:-dev}<\/AssemblyConfiguration>/g" ./src/Directory.Build.props
     fi
 }
 
@@ -104,7 +104,7 @@ BuildWithXbuild()
 {
     export MONO_IOMAP=case
     CheckExitCode msbuild /t:Clean $slnFile
-    mono $nuget restore $slnFile
+    $nuget restore $slnFile
     CheckExitCode msbuild /p:Configuration=Release /p:Platform=x86 /t:Build /p:AllowedReferenceRelatedFileExtensions=.pdb $slnFile
 }
 
@@ -203,7 +203,7 @@ PatchMono()
             if [ $runtime = "dotnet" ] ; then
                 $nuget install System.Numerics.Vectors -Version 4.5.0 -Output ./_temp/System.Numerics.Vectors
             else
-                mono $nuget install System.Numerics.Vectors -Version 4.5.0 -Output ./_temp/System.Numerics.Vectors
+                $nuget install System.Numerics.Vectors -Version 4.5.0 -Output ./_temp/System.Numerics.Vectors
             fi
             rm -rf ./_temp/System.Numerics.Vectors
         fi
@@ -242,7 +242,7 @@ PackageMono()
 
     # Remove Http binding redirect by renaming it
     # We don't need this anymore once our minimum mono version is 5.10
-    sed -i "s/System.Net.Http/System.Net.Http.Mono/g" $outputFolderLinux/Sonarr.Console.exe.config
+    sed -i '' "s/System.Net.Http/System.Net.Http.Mono/g" $outputFolderLinux/Sonarr.Console.exe.config
 
     echo "Renaming Sonarr.Console.exe to Sonarr.exe"
     rm $outputFolderLinux/Sonarr.exe*
@@ -322,7 +322,7 @@ PackageTestsMono()
     if [ $runtime = "dotnet" ] ; then
         $nuget install NUnit.ConsoleRunner -Version 3.10.0 -Output $testPackageFolderLinux
     else
-        mono $nuget install NUnit.ConsoleRunner -Version 3.10.0 -Output $testPackageFolderLinux
+        $nuget install NUnit.ConsoleRunner -Version 3.10.0 -Output $testPackageFolderLinux
     fi
 
     echo "Creating MDBs"
@@ -338,7 +338,7 @@ PackageTestsMono()
 
     # Remove Http binding redirect by renaming it
     # We don't need this anymore once our minimum mono version is 5.10
-    sed -i "s/System.Net.Http/System.Net.Http.Mono/g" $testPackageFolderLinux/Sonarr.Common.Test.dll.config
+    sed -i '' "s/System.Net.Http/System.Net.Http.Mono/g" $testPackageFolderLinux/Sonarr.Common.Test.dll.config
 
     cp ./test.sh $testPackageFolderLinux/
     dos2unix $testPackageFolderLinux/test.sh
@@ -365,7 +365,7 @@ PackageTestsWindows()
     if [ $runtime = "dotnet" ] ; then
         $nuget install NUnit.ConsoleRunner -Version 3.10.0 -Output $testPackageFolderWindows
     else
-        mono $nuget install NUnit.ConsoleRunner -Version 3.10.0 -Output $testPackageFolderWindows
+        $nuget install NUnit.ConsoleRunner -Version 3.10.0 -Output $testPackageFolderWindows
     fi
 
     cp ./test.sh $testPackageFolderWindows
