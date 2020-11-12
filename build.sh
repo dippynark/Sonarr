@@ -104,9 +104,9 @@ BuildWithMSBuild()
 BuildWithXbuild()
 {
     export MONO_IOMAP=case
-    CheckExitCode msbuild /t:Clean $slnFile
+    CheckExitCode dotnet msbuild /t:Clean $slnFile
     mono $nuget restore $slnFile
-    CheckExitCode msbuild /p:Configuration=Release /p:Platform=x86 /t:Build /p:AllowedReferenceRelatedFileExtensions=.pdb $slnFile
+    CheckExitCode dotnet msbuild /p:Configuration=Release /p:Platform=x86 /t:Build /p:AllowedReferenceRelatedFileExtensions=.pdb $slnFile
 }
 
 LintUI()
