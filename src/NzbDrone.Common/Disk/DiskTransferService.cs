@@ -375,14 +375,7 @@ namespace NzbDrone.Common.Disk
         {
             if (_diskProvider.FileExists(targetPath))
             {
-                if (overwrite)
-                {
-                    _diskProvider.DeleteFile(targetPath);
-                }
-                else
-                {
-                    throw new DestinationAlreadyExistsException($"Destination {targetPath} already exists.");
-                }
+                _diskProvider.DeleteFile(targetPath);
             }
         }
 
