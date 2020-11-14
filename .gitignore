@@ -142,3 +142,7 @@ _start
 
 src/.idea/
 /distribution/windows/setup/output/*
+
+# Custom
+/Sonarr.linux.tar.gz
+/Sonarr/
