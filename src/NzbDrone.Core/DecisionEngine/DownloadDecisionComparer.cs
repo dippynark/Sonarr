@@ -28,11 +28,11 @@ namespace NzbDrone.Core.DecisionEngine
         {
             var comparers = new List<CompareDelegate>
             {
+                CompareEpisodeCount,
                 CompareQuality,
                 CompareLanguage,
                 ComparePreferredWordScore,
                 CompareProtocol,
-                CompareEpisodeCount,
                 CompareEpisodeNumber,
                 CompareIndexerPriority,
                 ComparePeersIfTorrent,
@@ -188,7 +188,7 @@ namespace NzbDrone.Core.DecisionEngine
         {
             // TODO: Is smaller better? Smaller for usenet could mean no par2 files.
 
-            return CompareBy(x.RemoteEpisode, y.RemoteEpisode, remoteEpisode => remoteEpisode.Release.Size.Round(200.Megabytes()));
+            return CompareByReverse(x.RemoteEpisode, y.RemoteEpisode, remoteEpisode => remoteEpisode.Release.Size.Round(200.Megabytes()));
         }
     }
 }
